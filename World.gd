@@ -6,10 +6,16 @@ tool
 var chunk_scene = preload("res://CubicChunk.tscn")
 
 var load_radius = 5
+var load_middle = (load_radius/2) + 1
+var center_plane_chunks = {}
+var stray_chunks = {}
+var _chunks = {}
+
 onready var chunks = $Chunks
 onready var player = $Player
 
-var load_thread = Thread.new()
+var load_thread_center = Thread.new()
+var load_thread_stray = Thread.new()
 
 func _ready():
 	for i in range(0, load_radius):
@@ -19,32 +25,46 @@ func _ready():
 				var player_chunk_coords = _get_player_chunk_coords(Vector3(i, j, k))
 				
 				chunk.set_chunk_position(player_chunk_coords)
+				
+				var chunk_tag = (str(i) + ":" + str(j) + ":" + str(k))
+				if (j==load_middle):
+					center_plane_chunks[chunk_tag] = chunk
+				else:
+					stray_chunks[chunk_tag] = chunk
+				
+				_chunks[chunk_tag] = chunk
+				
 				chunks.add_child(chunk)
 	
-	load_thread.start(self, "_thread_process", null)
+	load_thread_center.start(self, "_thread_process", center_plane_chunks)
+	load_thread_stray.start(self, "_thread_process", stray_chunks)
 	
 	player.connect("place_block", self, "_on_Player_place_block")
 	player.connect("break_block", self, "_on_Player_break_block")
 
 func _thread_process(_userdata):
 	while(true):
-		for c in chunks.get_children():
-			var cx = c.chunk_position.x
-			var cy = c.chunk_position.y
-			var cz = c.chunk_position.z
-			
-			var player_chunk_coords = _get_player_chunk_coords(c.chunk_position)
-			var new_x = player_chunk_coords.x
-			var new_y = player_chunk_coords.y
-			var new_z = player_chunk_coords.z
-			
-			if (new_x != cx or new_y != cy or new_z != cz):
-				c.set_chunk_position(Vector3(int(new_x), int(new_y), int(new_z)))
-				c.generate()
-				c.update()
+		for key in _userdata.keys():
+			update_chunk(_userdata[key])
+
+func update_chunk(c):
+	var cx = c.chunk_position.x
+	var cy = c.chunk_position.y
+	var cz = c.chunk_position.z
+	
+	var player_chunk_coords = _get_player_chunk_coords(c.chunk_position)
+	var new_x = player_chunk_coords.x
+	var new_y = player_chunk_coords.y
+	var new_z = player_chunk_coords.z
+	
+	if (new_x != cx or new_y != cy or new_z != cz):
+		c.set_chunk_position(Vector3(int(new_x), int(new_y), int(new_z)))
+		c.generate()
+		c.update()
 
 # Fix this with a hash lookup by chunk coordinates
 func get_chunk(chunk_pos):
+	var chunk_tag = (str(chunk_pos.x) + ":" + str(chunk_pos.y) + ":" + str(chunk_pos.z))
 	for c in chunks.get_children():
 		if c.chunk_position == chunk_pos:
 			return c
