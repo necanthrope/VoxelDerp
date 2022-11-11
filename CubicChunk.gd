@@ -154,10 +154,3 @@ func set_chunk_position(pos):
 	chunk_position = pos
 	translation = Vector3(pos.x, pos.y, pos.z) * Global.DIMENSION
 	self.visible = false
-
-func _get_player_chunk_coords():
-	var px = floor($Player.translation.x / Global.DIMENSION.x)
-	var py = floor($Player.translation.y / Global.DIMENSION.y)
-	var pz = floor($Player.translation.z / Global.DIMENSION.z)
-	var chunk_coords = Vector3(px, py, pz)
-	return chunk_coords
