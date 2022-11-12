@@ -34,6 +34,9 @@ func _input(event):
 	if paused:
 		return
 	
+	if Input.is_action_just_pressed("Fly"):
+		fly = !fly
+	
 	if event is InputEventMouseMotion:
 		head.rotate_y(deg2rad(-event.relative.x * mouse_sensitivity))
 		

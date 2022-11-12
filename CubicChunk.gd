@@ -24,6 +24,7 @@ var blocks = []
 var st = SurfaceTool.new()
 var mesh = null
 var mesh_instance = null
+var _chunk_tag = null
 
 var material = preload("res://assets/new_spatialmaterial.tres")
 
@@ -154,3 +155,8 @@ func set_chunk_position(pos):
 	chunk_position = pos
 	translation = Vector3(pos.x, pos.y, pos.z) * Global.DIMENSION
 	self.visible = false
+	var chunk_tag = (str(chunk_position.x) + ":" + 
+		str(chunk_position.y) + ":" + 
+		str(chunk_position.z))
+	_chunk_tag = chunk_tag
+

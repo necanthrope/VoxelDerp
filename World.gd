@@ -1,12 +1,9 @@
 extends Spatial
 tool
 
-#https://www.youtube.com/watch?v=Q2iWDNq5PaU
-
 var chunk_scene = preload("res://CubicChunk.tscn")
 
 var load_radius = 5
-var load_middle = (load_radius/2) + 1
 var center_plane_chunks = {}
 var stray_chunks = {}
 var _chunks = {}
@@ -18,6 +15,8 @@ var load_thread_center = Thread.new()
 var load_thread_stray = Thread.new()
 
 func _ready():
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
 	for i in range(0, load_radius):
 		for j in range(0, load_radius):
 			for k in range(0, load_radius):
@@ -26,13 +25,12 @@ func _ready():
 				
 				chunk.set_chunk_position(player_chunk_coords)
 				
-				var chunk_tag = (str(i) + ":" + str(j) + ":" + str(k))
-				if (j==load_middle):
-					center_plane_chunks[chunk_tag] = chunk
+				if (j==player_chunk_coords.y):
+					center_plane_chunks[chunk._chunk_tag] = chunk
 				else:
-					stray_chunks[chunk_tag] = chunk
+					stray_chunks[chunk._chunk_tag] = chunk
 				
-				_chunks[chunk_tag] = chunk
+				_chunks[chunk._chunk_tag] = chunk
 				
 				chunks.add_child(chunk)
 	
@@ -41,13 +39,15 @@ func _ready():
 	
 	player.connect("place_block", self, "_on_Player_place_block")
 	player.connect("break_block", self, "_on_Player_break_block")
+	
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _thread_process(_userdata):
 	while(true):
 		for key in _userdata.keys():
-			update_chunk(_userdata[key])
+			_update_chunk(_userdata[key])
 
-func update_chunk(c):
+func _update_chunk(c):
 	var cx = c.chunk_position.x
 	var cy = c.chunk_position.y
 	var cz = c.chunk_position.z
