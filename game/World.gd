@@ -15,7 +15,8 @@ var load_thread_center = Thread.new()
 var load_thread_stray = Thread.new()
 
 func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if not Engine.editor_hint:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 	for i in range(0, load_radius):
 		for j in range(0, load_radius):
@@ -40,7 +41,8 @@ func _ready():
 	player.connect("place_block", self, "_on_Player_place_block")
 	player.connect("break_block", self, "_on_Player_break_block")
 	
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	if not Engine.editor_hint:
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _thread_process(_userdata):
 	while(true):

@@ -7,6 +7,6 @@
 script = ExtResource( 2 )
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7.42209, 31.6629, 8.43489 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 31.663, 0 )
 
 [node name="Chunks" type="Spatial" parent="."]
