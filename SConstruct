@@ -10,6 +10,12 @@ final_lib_path = 'game/bin/'
 # This makes sure to keep the session environment variables on windows, 
 # that way you can run scons in a vs 2017 prompt and it will find all the required tools
 env = Environment()
+
+# Define clang as compiler
+env["CC"]='clang'
+env["CXX"]='clang++'
+env["CPP"]='clang'
+
 if platform == "windows":
     env = Environment(ENV = os.environ)
 
