@@ -54,35 +54,41 @@ namespace godot {
 
 		std::map<
 			const godot::Global::block_type, 
-			const side_map,
+			std::pair<const side_map, const bool>,
 			std::less<
 				const godot::Global::block_type
 			>, 
 			std::allocator<
 				std::pair<
 					const godot::Global::block_type,
-					const side_map
+					std::pair<const side_map, const bool>
 				>
 			>
 		> block_types = {
-			{AIR, {}},
+			{AIR, {{}, false}},
 			{DIRT, 
 				{
-					{TOP, Vector2(2, 0)}, {BOTTOM, Vector2(2, 0)}, {LEFT, Vector2(2, 0)},
-					{RIGHT, Vector2(2,0)}, {FRONT, Vector2(2, 0)}, {BACK, Vector2(2, 0)}
+					{
+						{TOP, Vector2(2, 0)}, {BOTTOM, Vector2(2, 0)}, {LEFT, Vector2(2, 0)},
+						{RIGHT, Vector2(2,0)}, {FRONT, Vector2(2, 0)}, {BACK, Vector2(2, 0)}
+					}, true
 				}
 			},
 			
 			{GRASS, 
 				{
-					{TOP, Vector2(0, 0)}, {BOTTOM, Vector2(2, 0)}, {LEFT, Vector2(1, 0)},
-					{RIGHT, Vector2(1,0)}, {FRONT, Vector2(1, 0)}, {BACK, Vector2(1, 0)}
+					{
+						{TOP, Vector2(0, 0)}, {BOTTOM, Vector2(2, 0)}, {LEFT, Vector2(1, 0)},
+						{RIGHT, Vector2(1,0)}, {FRONT, Vector2(1, 0)}, {BACK, Vector2(1, 0)}
+					}, true
 				}
 			},
 			{STONE,
 				{
-					{TOP, Vector2(0, 1)}, {BOTTOM, Vector2(0, 1)}, {LEFT, Vector2(0, 1)},
-					{RIGHT, Vector2(0, 1)}, {FRONT, Vector2(0, 1)}, {BACK, Vector2(0, 1)}
+					{
+						{TOP, Vector2(0, 1)}, {BOTTOM, Vector2(0, 1)}, {LEFT, Vector2(0, 1)},
+						{RIGHT, Vector2(0, 1)}, {FRONT, Vector2(0, 1)}, {BACK, Vector2(0, 1)}
+					}, true
 				}
 			}
 			

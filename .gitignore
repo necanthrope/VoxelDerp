@@ -8,6 +8,8 @@ export_presets.cfg
 
 # SCons-specific ignores
 .sconsign.dblite
+**/*.os
+**/*.so
 
 # Imported translations (automatically generated from CSV files)
 *.translation
