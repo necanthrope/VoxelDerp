@@ -21,6 +21,6 @@ src/.metadata/
 .vscode/
 
 # Mono-specific ignores
-.mono/
-.mono_*
-data_*/
+game/.mono/
+game/.mono_*
+game/data_*/
