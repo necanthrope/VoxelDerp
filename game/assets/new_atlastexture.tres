@@ -3,5 +3,5 @@
 [ext_resource path="res://assets/atlastexture.dds" type="Texture" id=1]
 
 [resource]
-flags = 7
+flags = 2
 atlas = ExtResource( 1 )

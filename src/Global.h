@@ -39,28 +39,28 @@ namespace godot {
 		void _init(); // our initializer called by Godot
 
 		std::map<
-			const godot::Global::block_side, 
+			const block_side, 
 			const Vector2, 
 			std::less<
-				const godot::Global::block_side
+				const block_side
 			>, 
 			std::allocator<
 				std::pair<
-					const godot::Global::block_side, 
+					const block_side, 
 					const Vector2
 				>
 			>
 		> typedef side_map;
 
 		std::map<
-			const godot::Global::block_type, 
+			const block_type, 
 			std::pair<const side_map, const bool>,
 			std::less<
-				const godot::Global::block_type
+				const block_type
 			>, 
 			std::allocator<
 				std::pair<
-					const godot::Global::block_type,
+					const block_type,
 					std::pair<const side_map, const bool>
 				>
 			>

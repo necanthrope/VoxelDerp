@@ -14,6 +14,12 @@ export_presets.cfg
 # Imported translations (automatically generated from CSV files)
 *.translation
 
+# gdnative/c++ specific ignores
+src/.metadata/
+
+# MS Visual Studio Code specific ignores
+.vscode/
+
 # Mono-specific ignores
 .mono/
 .mono_*

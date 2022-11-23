@@ -47,6 +47,11 @@ env.Append(CPPPATH=['.', 'src/', "godot-headers/", 'godot-cpp/include/', 'godot-
 env.Append(LIBPATH="godot-cpp/bin")
 env.Append(LIBS=["libgodot-cpp" + "." + platform + ".debug." + str(bits)])
 
+debug = ARGUMENTS.get('debug', 0)
+if int(debug):
+   env.Append(CXXFLAGS = ['-gfull'])
+
+
 sources = []
 add_sources(sources, "src")
 

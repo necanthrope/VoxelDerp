@@ -2,8 +2,21 @@
 #define CUBICCHUNK_H
 
 #include <Godot.hpp>
+#include <Node.hpp>
 #include <StaticBody.hpp>
 #include <Vector3.hpp>
+#include <PoolArrays.hpp>
+#include <SpatialMaterial.hpp>
+#include <ResourceLoader.hpp>
+#include <Ref.hpp>
+#include <Texture.hpp>
+#include <OpenSimplexNoise.hpp>
+#include <ArrayMesh.hpp>
+#include <Mesh.hpp>
+#include <MeshInstance.hpp>
+#include <SurfaceTool.hpp>
+#include <iostream>
+#include "./Global.h"
 
 namespace godot {
 
@@ -30,9 +43,27 @@ namespace godot {
     	const int FRONT  [4] = {7, 5, 4, 6};
    		const int BACK   [4] = {2, 0, 1, 3};
 
-	
+		Global global_;
+		Ref<OpenSimplexNoise> noise_;
+		Ref<SpatialMaterial> material_;
+		MeshInstance* mesh_instance_ = nullptr;
+		Ref<SurfaceTool> st_;
+		godot::Global::block_type blocks_[16][16][16];
+		Vector3 chunk_position_;
+		
+
+		
+		void create_block(int, int, int);
+		void create_face(const int[4], int, int, int, Vector2);
+		bool check_transparent(int, int, int);
+
 	public:
+		
+		std::string chunk_tag;
+		
 		static void _register_methods();
+		void generate();
+		void update();
 
 		CubicChunk();
 		~CubicChunk();
@@ -40,6 +71,10 @@ namespace godot {
 		void _init(); // our initializer called by Godot
 
     	void _process(float delta);
+
+		void set_chunk_position(Vector3);
+		Vector3 get_chunk_position();
+		std::string chunk_tag_;
 
 	};
 

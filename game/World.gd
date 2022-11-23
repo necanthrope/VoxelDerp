@@ -1,12 +1,13 @@
 extends Spatial
 tool
 
-var chunk_scene = preload("res://CubicChunk.tscn")
+#var chunk_scene = preload("res://CubicChunk.tscn")
+var chunk_obj = preload("res://bin/CubicChunk.gdns")
 
 var load_radius = 5
-var center_plane_chunks = {}
-var stray_chunks = {}
-var _chunks = {}
+#var center_plane_chunks = {}
+#var stray_chunks = {}
+#var _chunks = {}
 
 onready var chunks = $Chunks
 onready var player = $Player
@@ -18,25 +19,33 @@ func _ready():
 	if not Engine.editor_hint:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
+#	if (chunk_obj == null):
+#		chunk_obj = load("res://bin/CubicChunk.gdns")
+
+	#var chunk_obj = load("res://bin/CubicChunk.gdns")
 	for i in range(0, load_radius):
 		for j in range(0, load_radius):
 			for k in range(0, load_radius):
-				var chunk = chunk_scene.instance()
+				#var chunk = chunk_scene.instance()
+				var chunk = chunk_obj.new()
 				var player_chunk_coords = _get_player_chunk_coords(Vector3(i, j, k))
 				
 				chunk.set_chunk_position(player_chunk_coords)
 				
-				if (j==player_chunk_coords.y):
-					center_plane_chunks[chunk._chunk_tag] = chunk
-				else:
-					stray_chunks[chunk._chunk_tag] = chunk
+				#if (j==player_chunk_coords.y):
+				#	center_plane_chunks[chunk._chunk_tag] = chunk
+				#else:
+				#	stray_chunks[chunk._chunk_tag] = chunk
 				
-				_chunks[chunk._chunk_tag] = chunk
-				
+				#_chunks[chunk._chunk_tag] = chunk
 				chunks.add_child(chunk)
 	
-	load_thread_center.start(self, "_thread_process", center_plane_chunks)
-	load_thread_stray.start(self, "_thread_process", stray_chunks)
+	var kids = str(chunks.get_child_count())
+	print ("chunk kids: ", kids)
+	
+	#load_thread_center.start(self, "_thread_process", center_plane_chunks)
+	#load_thread_stray.start(self, "_thread_process", stray_chunks)
+	load_thread_stray.start(self, "_thread_process")
 	
 	player.connect("place_block", self, "_on_Player_place_block")
 	player.connect("break_block", self, "_on_Player_break_block")
@@ -46,15 +55,15 @@ func _ready():
 
 func _thread_process(_userdata):
 	while(true):
-		for key in _userdata.keys():
-			_update_chunk(_userdata[key])
+		for c in chunks.get_children():
+			_update_chunk(c)
 
 func _update_chunk(c):
-	var cx = c.chunk_position.x
-	var cy = c.chunk_position.y
-	var cz = c.chunk_position.z
+	var cx = c.get_chunk_position().x
+	var cy = c.get_chunk_position().y
+	var cz = c.get_chunk_position().z
 	
-	var player_chunk_coords = _get_player_chunk_coords(c.chunk_position)
+	var player_chunk_coords = _get_player_chunk_coords(c.get_chunk_position())
 	var new_x = player_chunk_coords.x
 	var new_y = player_chunk_coords.y
 	var new_z = player_chunk_coords.z
@@ -66,9 +75,9 @@ func _update_chunk(c):
 
 # Fix this with a hash lookup by chunk coordinates
 func get_chunk(chunk_pos):
-	var chunk_tag = (str(chunk_pos.x) + ":" + str(chunk_pos.y) + ":" + str(chunk_pos.z))
+	var _chunk_tag = (str(chunk_pos.x) + ":" + str(chunk_pos.y) + ":" + str(chunk_pos.z))
 	for c in chunks.get_children():
-		if c.chunk_position == chunk_pos:
+		if c.get_chunk_position() == chunk_pos:
 			return c
 	return null
 
@@ -83,7 +92,7 @@ func _on_Player_place_block(pos, t):
 	
 	var c = get_chunk(Vector3(cx, cy, cz))
 	if c != null:
-		c.blocks[bx][by][bz] = t
+		c.blocks_[bx][by][bz] = t
 		c.update()
 
 func _on_Player_break_block(pos):

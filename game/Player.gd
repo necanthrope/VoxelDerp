@@ -15,7 +15,7 @@ const jump_velocity = 10
 var velocity = Vector3()
 
 var paused = false
-var fly = false
+var fly = true
 
 signal place_block(pos, t)
 signal break_block(pos)
