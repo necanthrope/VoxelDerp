@@ -122,60 +122,6 @@ bool CubicChunk::check_transparent(int x, int y, int z) {
     Vector3 global_pos = chunk_position_ * global_.DIMENSION + Vector3(x, y, z);
     godot::Global::block_type block = get_block_type(global_pos);
     return !getSolidity(block);
-
-    // if (x >= 0 and x < global_.DIMENSION.x && \
-	// 	y >= 0 and y < global_.DIMENSION.y && \
-	// 	z >= 0 and z < global_.DIMENSION.z) {
-    //     godot::Global::block_type block = blocks_[x][y][z];
-    //     return !getSolidity(block);
-    // } else if(x < 0) {
-    //     Vector3 global_pos = chunk_position_ * global_.DIMENSION + Vector3(i, j, k);
-    //     std::string address = make_chunk_tag(Vector3(chunk_position_.x -1, chunk_position_.y, chunk_position_.z));
-    //     if ((*chunk_map_)[address]) {
-    //         CubicChunk* nextdoor = (*chunk_map_)[address];
-    //         godot::Global::block_type block = nextdoor->blocks_[15][y][z];
-    //         return !getSolidity(block);
-    //     }
-    // } else if(x >= global_.DIMENSION.x) {
-    //     std::string address = make_chunk_tag(Vector3(chunk_position_.x +1, chunk_position_.y, chunk_position_.z));
-    //     if ((*chunk_map_)[address]) {
-    //         CubicChunk* nextdoor = (*chunk_map_)[address];
-    //         godot::Global::block_type block = nextdoor->blocks_[0][y][z];
-    //         return !getSolidity(block);
-    //     }
-    // } else if(y < 0) {
-    //     std::string address = make_chunk_tag(Vector3(chunk_position_.x, chunk_position_.y -1, chunk_position_.z));
-    //     if ((*chunk_map_)[address]) {
-    //         CubicChunk* nextdoor = (*chunk_map_)[address];
-    //         godot::Global::block_type block = nextdoor->blocks_[x][15][z];
-    //         return !getSolidity(block);
-    //     }
-    // } else if(y >= global_.DIMENSION.y) {
-    //     std::string address = make_chunk_tag(Vector3(chunk_position_.x, chunk_position_.y +1, chunk_position_.z));
-    //     if ((*chunk_map_)[address]) {
-    //         CubicChunk* nextdoor = (*chunk_map_)[address];
-    //         godot::Global::block_type block = nextdoor->blocks_[x][0][z];
-    //         return !getSolidity(block);
-    //     }
-    // } else if(z < 0) {
-    //     std::string address = make_chunk_tag(Vector3(chunk_position_.x, chunk_position_.y, chunk_position_.z -1));
-    //     if ((*chunk_map_)[address]) {
-    //         CubicChunk* nextdoor = (*chunk_map_)[address];
-    //         godot::Global::block_type block = nextdoor->blocks_[x][y][15];
-    //         return !getSolidity(block);
-    //     }
-    // } else if(z >= global_.DIMENSION.z) {
-    //     std::string address = make_chunk_tag(Vector3(chunk_position_.x, chunk_position_.y, chunk_position_.z +1));
-    //     if ((*chunk_map_)[address]) {
-    //         CubicChunk* nextdoor = (*chunk_map_)[address];
-    //         godot::Global::block_type block = nextdoor->blocks_[x][y][0];
-    //         return !getSolidity(block);
-    //     }
-    // } else {
-    //     return true;
-    // }
-    // return false;
-	
 }
 
 
