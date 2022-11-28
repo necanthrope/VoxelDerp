@@ -9,8 +9,8 @@ var camera_x_rotation = 0
 
 const mouse_sensitivity = 0.3
 const movement_speed = 10
-const gravity = 20
-const jump_velocity = 10
+const gravity = 9.8
+const jump_velocity = 5
 
 var velocity = Vector3()
 
@@ -20,8 +20,8 @@ var fly = true
 signal place_block(pos, t)
 signal break_block(pos)
 
-func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+#func _ready():
+#	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _input(event):
 	if Input.is_action_just_pressed("Pause"):

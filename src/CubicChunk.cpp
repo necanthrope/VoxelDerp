@@ -1,12 +1,14 @@
 #include "CubicChunk.h"
+#include "CubicWorld.h"
 #include <chrono>
 
 using namespace godot;
 
 void CubicChunk::_register_methods() {
+    register_method("_process", &CubicChunk::_process);
+    register_method("_ready", &CubicChunk::_ready);
     register_method("generate", &CubicChunk::generate);
     register_method("update", &CubicChunk::update);
-    register_method("_process", &CubicChunk::_process);
     register_method("set_chunk_position", &CubicChunk::set_chunk_position);
     register_method("get_chunk_position", &CubicChunk::get_chunk_position);
     register_method("_init", &CubicChunk::_init);
@@ -28,41 +30,40 @@ void CubicChunk::_init() {
 
     ResourceLoader* loader = ResourceLoader::get_singleton();
 	material_ = loader->load("res://assets/new_spatialmaterial.tres");
-    material_->get_texture(SpatialMaterial::TEXTURE_ALBEDO)->set_flags(Texture::FLAG_REPEAT);
+    meshDataTool_ = MeshDataTool::_new();
     noise_ = Ref<OpenSimplexNoise>(OpenSimplexNoise::_new());
     st_ = Ref<SurfaceTool>(SurfaceTool::_new());
 
 }
 
-void CubicChunk::generate() {
-    int chunk_elevation = chunk_position_.y * global_.DIMENSION.y;
+godot::Global::block_type CubicChunk::get_block_type(Vector3 global_pos) {
+    
+    float elev = noise_->get_noise_3dv(global_pos);
+    int height = ceil(int((elev + 1)/2 * global_.WORLD_HEIGHT));
+                
+    int block_elevation = global_pos.y;
+    godot::Global::block_type block = global_.AIR;
+    if (block_elevation < height / 2) {
+        block = global_.STONE;
+    } else if (block_elevation < height) {
+        block = global_.DIRT;
+    } else if (block_elevation == height) {
+        block = global_.GRASS;
+    }
 
+    return block;
+}
+
+void CubicChunk::generate() {
     int dim_x = global_.DIMENSION.x;
     int dim_y = global_.DIMENSION.y;
     int dim_z = global_.DIMENSION.z;
-    //int blocks[dim_x][dim_y][dim_z];
-
-
+    
     for (int i = 0; i < dim_x; i++) {
         for (int j = 0; j < dim_y; j++) {
             for (int k = 0; k < dim_z; k++) {
                 Vector3 global_pos = chunk_position_ * global_.DIMENSION + Vector3(i, j, k);
-
-                float elev = noise_->get_noise_3dv(global_pos);
-                int height = ceil(int((elev + 1)/2 * global_.WORLD_HEIGHT));
-
-                godot::Global::block_type block = global_.AIR;
-
-                int block_elevation = chunk_elevation + j;
-
-                if (block_elevation < height / 2) {
-                    block = global_.STONE;
-                } else if (block_elevation < height) {
-                    block = global_.DIRT;
-                } else if (block_elevation == height) {
-                    block = global_.GRASS;
-                }
-
+                godot::Global::block_type block = get_block_type(global_pos);
                 blocks_[i][j][k] = block;
             }
         }
@@ -110,27 +111,79 @@ void CubicChunk::create_face(const int i[4], int x, int y, int z, Vector2 textur
 	st_->add_triangle_fan(vertices2, uvs2);
 }
 
+bool CubicChunk::getSolidity(godot::Global::block_type block) {
+    std::pair<godot::Global::side_map, bool> block_pair = global_.block_types[block];
+    godot::Global::side_map block_info = block_pair.first;
+    const bool solid = block_pair.second; 
+    return solid;
+}
+
 bool CubicChunk::check_transparent(int x, int y, int z) {
-    if (x >= 0 and x < global_.DIMENSION.x && \
-		y >= 0 and y < global_.DIMENSION.y && \
-		z >= 0 and z < global_.DIMENSION.z) {
-            godot::Global::block_type block = blocks_[x][y][z];
-            std::pair<godot::Global::side_map, bool> block_pair = global_.block_types[block];
-            godot::Global::side_map block_info = block_pair.first;
-            const bool solid = block_pair.second; 
-            return !solid;
-    } else {
-        return true;
-    }
+    Vector3 global_pos = chunk_position_ * global_.DIMENSION + Vector3(x, y, z);
+    godot::Global::block_type block = get_block_type(global_pos);
+    return !getSolidity(block);
+
+    // if (x >= 0 and x < global_.DIMENSION.x && \
+	// 	y >= 0 and y < global_.DIMENSION.y && \
+	// 	z >= 0 and z < global_.DIMENSION.z) {
+    //     godot::Global::block_type block = blocks_[x][y][z];
+    //     return !getSolidity(block);
+    // } else if(x < 0) {
+    //     Vector3 global_pos = chunk_position_ * global_.DIMENSION + Vector3(i, j, k);
+    //     std::string address = make_chunk_tag(Vector3(chunk_position_.x -1, chunk_position_.y, chunk_position_.z));
+    //     if ((*chunk_map_)[address]) {
+    //         CubicChunk* nextdoor = (*chunk_map_)[address];
+    //         godot::Global::block_type block = nextdoor->blocks_[15][y][z];
+    //         return !getSolidity(block);
+    //     }
+    // } else if(x >= global_.DIMENSION.x) {
+    //     std::string address = make_chunk_tag(Vector3(chunk_position_.x +1, chunk_position_.y, chunk_position_.z));
+    //     if ((*chunk_map_)[address]) {
+    //         CubicChunk* nextdoor = (*chunk_map_)[address];
+    //         godot::Global::block_type block = nextdoor->blocks_[0][y][z];
+    //         return !getSolidity(block);
+    //     }
+    // } else if(y < 0) {
+    //     std::string address = make_chunk_tag(Vector3(chunk_position_.x, chunk_position_.y -1, chunk_position_.z));
+    //     if ((*chunk_map_)[address]) {
+    //         CubicChunk* nextdoor = (*chunk_map_)[address];
+    //         godot::Global::block_type block = nextdoor->blocks_[x][15][z];
+    //         return !getSolidity(block);
+    //     }
+    // } else if(y >= global_.DIMENSION.y) {
+    //     std::string address = make_chunk_tag(Vector3(chunk_position_.x, chunk_position_.y +1, chunk_position_.z));
+    //     if ((*chunk_map_)[address]) {
+    //         CubicChunk* nextdoor = (*chunk_map_)[address];
+    //         godot::Global::block_type block = nextdoor->blocks_[x][0][z];
+    //         return !getSolidity(block);
+    //     }
+    // } else if(z < 0) {
+    //     std::string address = make_chunk_tag(Vector3(chunk_position_.x, chunk_position_.y, chunk_position_.z -1));
+    //     if ((*chunk_map_)[address]) {
+    //         CubicChunk* nextdoor = (*chunk_map_)[address];
+    //         godot::Global::block_type block = nextdoor->blocks_[x][y][15];
+    //         return !getSolidity(block);
+    //     }
+    // } else if(z >= global_.DIMENSION.z) {
+    //     std::string address = make_chunk_tag(Vector3(chunk_position_.x, chunk_position_.y, chunk_position_.z +1));
+    //     if ((*chunk_map_)[address]) {
+    //         CubicChunk* nextdoor = (*chunk_map_)[address];
+    //         godot::Global::block_type block = nextdoor->blocks_[x][y][0];
+    //         return !getSolidity(block);
+    //     }
+    // } else {
+    //     return true;
+    // }
+    // return false;
 	
 }
 
 
-void CubicChunk::create_block(int x, int y, int z) {
+int CubicChunk::create_block(int x, int y, int z) {
 
     godot::Global::block_type block = blocks_[x][y][z];
 	if (block == godot::Global::AIR) {
-		return;
+		return 0;
     }
 
 	std::pair<godot::Global::side_map, bool> block_pair = global_.block_types[block];
@@ -159,6 +212,7 @@ void CubicChunk::create_block(int x, int y, int z) {
 	if (check_transparent(x, y, z + 1)) {
 		create_face(FRONT, x, y, z, block_info[global_.FRONT]);
     }
+    return 1;
 }
 
 void CubicChunk::update() {
@@ -166,7 +220,8 @@ void CubicChunk::update() {
     //Unload
 	if (mesh_instance_) {
         mesh_instance_->call_deferred("queue_free", godot::Array());
-        mesh_instance_ = nullptr;
+        //remove_child(mesh_instance_);
+        //mesh_instance_->queue_free();
 	}
 
     godot::Ref<godot::ArrayMesh> mesh = Ref<ArrayMesh>(ArrayMesh::_new());
@@ -179,23 +234,28 @@ void CubicChunk::update() {
     int dim_y = global_.DIMENSION.y;
     int dim_z = global_.DIMENSION.z;
 
+    int block_count = 0;
     for (int x = 0; x < dim_x; x++) {
         for (int y = 0; y < dim_y; y++) {
             for (int z = 0; z < dim_z; z++) {
-                create_block(x, y, z);
+                block_count += create_block(x, y, z);
             }
         }
     }
 
-    st_->generate_normals(false);
-	st_->set_material(material_);
-	st_->commit(mesh);
-	mesh_instance_->set_mesh(mesh);
-
-	add_child(mesh_instance_);
-    mesh_instance_->create_trimesh_collision();
-
-    set_visible(true);
+    if (block_count > 0) {
+        st_->generate_normals(false);
+	    st_->set_material(material_);
+	    st_->commit(mesh);
+	    mesh_instance_->set_mesh(mesh);
+    
+	    add_child(mesh_instance_);
+        //mesh_instance_->get
+        //mesh->create_trimesh_shape();
+        mesh_instance_->create_trimesh_collision();
+        set_visible(true);
+    }
+    
 }
 
 void CubicChunk::set_chunk_position(Vector3 pos) {
@@ -203,18 +263,27 @@ void CubicChunk::set_chunk_position(Vector3 pos) {
 	Vector3 translation = Vector3(pos.x, pos.y, pos.z) * global_.DIMENSION;
     set_translation(translation);
 	set_visible(false);
-	chunk_tag_ = (std::to_string(static_cast<int>(chunk_position_.x)) + ":" + 
-		std::to_string(static_cast<int>(chunk_position_.y)) + ":" + 
-		std::to_string(static_cast<int>(chunk_position_.z)));
-    generate();
-    update();
+	chunk_tag_ = make_chunk_tag(chunk_position_);
 }
 
 Vector3 CubicChunk::get_chunk_position() {
     return chunk_position_;
 }
 
+void CubicChunk::_ready() {
+    material_->get_texture(SpatialMaterial::TEXTURE_ALBEDO)->set_flags(Texture::FLAG_REPEAT);
+    generate();
+    update();
+}
 
 void CubicChunk::_process(float delta) {
 
+}
+
+std::string CubicChunk::make_chunk_tag(Vector3 coords) {
+    return (
+        std::to_string(static_cast<int>(coords.x)) + ":" + 
+		std::to_string(static_cast<int>(coords.y)) + ":" + 
+		std::to_string(static_cast<int>(coords.z))
+    );
 }

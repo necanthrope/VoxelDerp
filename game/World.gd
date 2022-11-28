@@ -1,8 +1,9 @@
 extends Spatial
-tool
+#tool
 
 #var chunk_scene = preload("res://CubicChunk.tscn")
 var chunk_obj = preload("res://bin/CubicChunk.gdns")
+var world_obj = preload("res://bin/CubicWorld.gdns")
 
 var load_radius = 5
 #var center_plane_chunks = {}
@@ -18,14 +19,14 @@ var load_thread_stray = Thread.new()
 func _ready():
 	if not Engine.editor_hint:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-
-#	if (chunk_obj == null):
-#		chunk_obj = load("res://bin/CubicChunk.gdns")
-
-	#var chunk_obj = load("res://bin/CubicChunk.gdns")
+	
+	if (chunk_obj == null):
+		chunk_obj = load("res://bin/CubicChunk.gdns")
+	
 	for i in range(0, load_radius):
 		for j in range(0, load_radius):
 			for k in range(0, load_radius):
+				
 				#var chunk = chunk_scene.instance()
 				var chunk = chunk_obj.new()
 				var player_chunk_coords = _get_player_chunk_coords(Vector3(i, j, k))

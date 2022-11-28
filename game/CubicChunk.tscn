@@ -4,3 +4,4 @@
 
 [node name="CubicChunk" type="StaticBody"]
 script = ExtResource( 1 )
+chunk_position_ = null

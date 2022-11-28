@@ -23,4 +23,5 @@ src/.metadata/
 # Mono-specific ignores
 game/.mono/
 game/.mono_*
+game/mono_*
 game/data_*/

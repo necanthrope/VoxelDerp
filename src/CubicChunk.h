@@ -14,6 +14,7 @@
 #include <ArrayMesh.hpp>
 #include <Mesh.hpp>
 #include <MeshInstance.hpp>
+#include <MeshDataTool.hpp>
 #include <SurfaceTool.hpp>
 #include <iostream>
 #include "./Global.h"
@@ -48,18 +49,19 @@ namespace godot {
 		Ref<SpatialMaterial> material_;
 		MeshInstance* mesh_instance_ = nullptr;
 		Ref<SurfaceTool> st_;
-		godot::Global::block_type blocks_[16][16][16];
 		Vector3 chunk_position_;
+		MeshDataTool* meshDataTool_;
 		
-
-		
-		void create_block(int, int, int);
+		int create_block(int, int, int);
 		void create_face(const int[4], int, int, int, Vector2);
 		bool check_transparent(int, int, int);
+		bool getSolidity(Global::block_type);
+		godot::Global::block_type get_block_type(Vector3);
 
 	public:
 		
-		std::string chunk_tag;
+		std::string chunk_tag_;
+		godot::Global::block_type blocks_[16][16][16];
 		
 		static void _register_methods();
 		void generate();
@@ -68,13 +70,19 @@ namespace godot {
 		CubicChunk();
 		~CubicChunk();
 
+		void _ready();
+
 		void _init(); // our initializer called by Godot
 
     	void _process(float delta);
 
 		void set_chunk_position(Vector3);
+
 		Vector3 get_chunk_position();
-		std::string chunk_tag_;
+
+		std::string make_chunk_tag(Vector3);
+
+		//std::map<std::string, CubicChunk*>* chunk_map_;
 
 	};
 
