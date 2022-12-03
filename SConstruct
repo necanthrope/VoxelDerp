@@ -31,7 +31,7 @@ if platform == "osx":
     final_lib_path = final_lib_path + 'osx/'
 
 elif platform == "linux":
-    env.Append(CCFLAGS = ['-fPIC', '-g','-O3', '-std=c++14'])
+    env.Append(CCFLAGS = ['-fPIC', '-std=c++14'])
 
     final_lib_path = final_lib_path + 'x11/'
 
@@ -49,7 +49,7 @@ env.Append(LIBS=["libgodot-cpp" + "." + platform + ".debug." + str(bits)])
 
 debug = ARGUMENTS.get('debug', 0)
 if int(debug):
-   env.Append(CXXFLAGS = ['-gfull'])
+   env.Append(CXXFLAGS = ['-g3', '-O0'])
 
 
 sources = []

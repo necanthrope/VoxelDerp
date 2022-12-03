@@ -100,23 +100,3 @@ func _physics_process(delta):
 			emit_signal("place_block", pos + norm, Global.STONE)
 	else:
 		block_outline.visible = false
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
