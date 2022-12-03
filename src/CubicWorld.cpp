@@ -72,9 +72,9 @@ void CubicWorld::_update_chunk(CubicChunk* c) {
 
 void CubicWorld::_thread_process() {
 	while(true) {
-        //int child_count = chunks_->get_child_count();
+        int child_count = chunks_->get_child_count();
 
-        int child_count = chunks_->get_children().size();
+        //int child_count = chunks_->get_children().size();
 
 		for (int c = 0; c < child_count; c++) {
 			godot::CubicChunk* chunk = Object::cast_to<CubicChunk>(chunks_->get_children()[c]);
