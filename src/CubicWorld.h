@@ -27,8 +27,7 @@ namespace godot {
     private:
         Global global_;
         //Ref<Input> input_;
-        Vector3 load_radius_ = Vector3(15, 15, 15);
-        //Vector3 load_radius_ = Vector3(5,5,5);
+        Vector3 load_radius_ = Vector3(7, 7, 7);
         Thread* load_thread_stray_;
         Engine* engine_;
 

@@ -1,9 +1,5 @@
 #!/bin/sh
 
-mkdir src
-mkdir game
-
-#git init
 git submodule add -b 3.x https://github.com/godotengine/godot-cpp
 cd godot-cpp
 git submodule update --init

@@ -4,8 +4,12 @@
 .idea/
 godot-cpp/
 godot-headers/
+cmake-build-debug/
+
 export.cfg
 export_presets.cfg
+CMakeLists.txt
+
 
 # SCons-specific ignores
 .sconsign.dblite

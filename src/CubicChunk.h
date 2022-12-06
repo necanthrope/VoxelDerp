@@ -61,7 +61,7 @@ namespace godot {
 	public:
 		
 		std::string chunk_tag_;
-		godot::Global::block_type blocks_[16][16][16];
+		godot::Global::block_type blocks_[32][32][32];
 		
 		static void _register_methods();
 		void generate();

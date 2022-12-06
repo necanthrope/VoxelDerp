@@ -196,8 +196,6 @@ void CubicChunk::update() {
 	    mesh_instance_->set_mesh(mesh);
     
 	    add_child(mesh_instance_);
-        //mesh_instance_->get
-        //mesh->create_trimesh_shape();
         mesh_instance_->create_trimesh_collision();
         set_visible(true);
     }
