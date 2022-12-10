@@ -16,6 +16,7 @@ void CubicWorld::_init() {
 
     load_thread_stray_ = Thread::_new();
     engine_ = Engine::get_singleton();
+    block_library_ = new Blocks();
     //input_ = Ref<Input>(Input::_new());
 
 }
@@ -65,6 +66,7 @@ void CubicWorld::_update_chunk(CubicChunk* c) {
 	
 	if (new_x != cx or new_y != cy or new_z != cz) {
 		c->set_chunk_position(Vector3(int(new_x), int(new_y), int(new_z)));
+        c->block_library_ = block_library_;
 		c->generate();
 		c->update();
     }
@@ -103,7 +105,7 @@ CubicChunk* CubicWorld::get_chunk(Vector3 chunk_position) {
 	return nullptr;
 }
 
-void CubicWorld::_on_Player_place_block(Vector3 pos, Global::block_type t) {
+void CubicWorld::_on_Player_place_block(Vector3 pos, Blocks::block_type t) {
 	float cx = int(floor(pos.x / global_.DIMENSION.x));
 	float cy = int(floor(pos.y / global_.DIMENSION.y));
 	float cz = int(floor(pos.z / global_.DIMENSION.z));
@@ -120,7 +122,7 @@ void CubicWorld::_on_Player_place_block(Vector3 pos, Global::block_type t) {
 }
 
 void CubicWorld::_on_Player_break_block(Vector3 pos) {
-	_on_Player_place_block(pos, global_.AIR);
+	_on_Player_place_block(pos, block_library_->AIR);
 }
 
 void CubicWorld::_ready() {
@@ -140,6 +142,7 @@ void CubicWorld::_ready() {
                 Vector3 player_chunk_coords = _get_player_chunk_coords(Vector3(i, j, k));
 
                 chunk->set_chunk_position(player_chunk_coords);
+                chunk->block_library_ = block_library_;
                 //chunk->chunk_map_ = &chunk_map_;
                 chunks_->add_child(chunk);
 

@@ -14,6 +14,5 @@ extern "C" void GDN_EXPORT godot_nativescript_init(void *handle) {
 
     godot::register_class<godot::CubicChunk>();
     godot::register_class<godot::CubicWorld>();
-    //godot::register_tool_class<godot::CubicChunk>();
-    
+
 }

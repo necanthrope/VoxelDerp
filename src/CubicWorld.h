@@ -16,6 +16,7 @@
 #include <Input.hpp>
 #include "Global.h"
 #include "CubicChunk.h"
+#include "Blocks.h"
 #include <limits.h>
 #include <iostream>
 
@@ -30,6 +31,7 @@ namespace godot {
         Vector3 load_radius_ = Vector3(7, 7, 7);
         Thread* load_thread_stray_;
         Engine* engine_;
+        Blocks* block_library_;
 
         Vector3 _get_player_chunk_coords(Vector3);
     
@@ -58,7 +60,7 @@ namespace godot {
 
         void _process(float delta);
         
-        void _on_Player_place_block(Vector3, Global::block_type);
+        void _on_Player_place_block(Vector3, Blocks::block_type);
 
         void _on_Player_break_block(Vector3);
         

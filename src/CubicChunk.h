@@ -17,6 +17,7 @@
 #include <MeshDataTool.hpp>
 #include <SurfaceTool.hpp>
 #include <iostream>
+#include "Blocks.h"
 #include "./Global.h"
 
 namespace godot {
@@ -55,14 +56,15 @@ namespace godot {
 		int create_block(int, int, int);
 		void create_face(const int[4], int, int, int, Vector2);
 		bool check_transparent(int, int, int);
-		bool getSolidity(Global::block_type);
-		godot::Global::block_type get_block_type(Vector3);
+		bool getSolidity(Blocks::block_type);
+		godot::Blocks::block_type get_block_type(Vector3);
 
 	public:
 		
 		std::string chunk_tag_;
-		godot::Global::block_type blocks_[32][32][32];
-		
+		godot::Blocks::block_type blocks_[32][32][32];
+        Blocks* block_library_;
+
 		static void _register_methods();
 		void generate();
 		void update();

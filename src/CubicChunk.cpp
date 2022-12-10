@@ -36,19 +36,19 @@ void CubicChunk::_init() {
 
 }
 
-godot::Global::block_type CubicChunk::get_block_type(Vector3 global_pos) {
+godot::Blocks::block_type CubicChunk::get_block_type(Vector3 global_pos) {
     
     float elev = noise_->get_noise_3dv(global_pos);
     int height = ceil(int((elev + 1)/2 * global_.WORLD_HEIGHT));
                 
     int block_elevation = global_pos.y;
-    godot::Global::block_type block = global_.AIR;
+    godot::Blocks::block_type block = block_library_->AIR;
     if (block_elevation < height / 2) {
-        block = global_.STONE;
+        block = block_library_->STONE;
     } else if (block_elevation < height) {
-        block = global_.DIRT;
+        block = block_library_->DIRT;
     } else if (block_elevation == height) {
-        block = global_.GRASS;
+        block = block_library_->GRASS;
     }
 
     return block;
@@ -63,7 +63,7 @@ void CubicChunk::generate() {
         for (int j = 0; j < dim_y; j++) {
             for (int k = 0; k < dim_z; k++) {
                 Vector3 global_pos = chunk_position_ * global_.DIMENSION + Vector3(i, j, k);
-                godot::Global::block_type block = get_block_type(global_pos);
+                godot::Blocks::block_type block = get_block_type(global_pos);
                 blocks_[i][j][k] = block;
             }
         }
@@ -111,52 +111,56 @@ void CubicChunk::create_face(const int i[4], int x, int y, int z, Vector2 textur
 	st_->add_triangle_fan(vertices2, uvs2);
 }
 
-bool CubicChunk::getSolidity(godot::Global::block_type block) {
-    std::pair<godot::Global::side_map, bool> block_pair = global_.block_types[block];
-    godot::Global::side_map block_info = block_pair.first;
-    const bool solid = block_pair.second; 
+bool CubicChunk::getSolidity(godot::Blocks::block_type block) {
+//    std::pair<godot::Global::side_map, bool> block_pair = block_library_->block_types[block];
+//    godot::Global::side_map block_info = block_pair.first;
+//    const bool solid = block_pair.second;
+    bool solid = block_library_->block_types[block]->solid;
     return solid;
 }
 
 bool CubicChunk::check_transparent(int x, int y, int z) {
     Vector3 global_pos = chunk_position_ * global_.DIMENSION + Vector3(x, y, z);
-    godot::Global::block_type block = get_block_type(global_pos);
-    return !getSolidity(block);
+    godot::Blocks::block_type block = get_block_type(global_pos);
+    bool transparent = !getSolidity(block);
+    return transparent;
 }
 
 
 int CubicChunk::create_block(int x, int y, int z) {
 
-    godot::Global::block_type block = blocks_[x][y][z];
-	if (block == godot::Global::AIR) {
+    godot::Blocks::block_type block = blocks_[x][y][z];
+	if (block == block_library_->AIR) {
 		return 0;
     }
 
-	std::pair<godot::Global::side_map, bool> block_pair = global_.block_types[block];
-    godot::Global::side_map block_info = block_pair.first;
+//	std::pair<godot::Global::side_map, bool> block_pair = block_library_->block_types[block];
+//    godot::Global::side_map block_info = block_pair.first;
+
+    godot::Blocks::block_data* block_info = block_library_->block_types.at(block);
 	
 	if (check_transparent(x, y + 1, z)) {
-		create_face(TOP, x, y, z, block_info[global_.TOP]);
+		create_face(TOP, x, y, z, block_info->sides[block_library_->TOP]);
     }
 	
 	if (check_transparent(x, y - 1, z)) {
-		create_face(BOTTOM, x, y, z, block_info[global_.BOTTOM]);
+		create_face(BOTTOM, x, y, z, block_info->sides[block_library_->BOTTOM]);
     }
 	
 	if (check_transparent(x - 1, y, z)) {
-		create_face(LEFT, x, y, z, block_info[global_.LEFT]);
+		create_face(LEFT, x, y, z, block_info->sides[block_library_->LEFT]);
     }
 		
 	if (check_transparent(x + 1, y, z)) {
-		create_face(RIGHT, x, y, z, block_info[global_.RIGHT]);
+		create_face(RIGHT, x, y, z, block_info->sides[block_library_->RIGHT]);
     }
 		
 	if (check_transparent(x, y, z - 1)) {
-		create_face(BACK, x, y, z, block_info[global_.BACK]);
+		create_face(BACK, x, y, z, block_info->sides[block_library_->BACK]);
     }
 		
 	if (check_transparent(x, y, z + 1)) {
-		create_face(FRONT, x, y, z, block_info[global_.FRONT]);
+		create_face(FRONT, x, y, z, block_info->sides[block_library_->FRONT]);
     }
     return 1;
 }
